@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>tween?</title>
+    <meta charset="utf-8" />
+    <meta http-equiv="content-language" content="zh-CN" />
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport" />
+
+    <script src="./dist/tween.js"></script>
+    <style>
+        html,body{
+            margin:0;
+            height: 100%;
+        }
+        h1 {
+            font-size: 16px;
+            text-align: center;
+            color: #ccc;
+        }
+        .outerbox{
+            width: 90%;
+            border: 1px solid #ccc;
+            margin: 10px auto;
+            display: block;
+            color: #666;
+            font-size: 12px;
+        }
+        #demo {
+            height: 50%;
+            margin-top: 0;
+        }
+        select{
+            width: 90%;
+            outline: none;
+            display: block;
+            margin: auto;
+            height: 30px;
+        }
+        #blockwrap{
+            padding: 0 20%;
+            width: 50%;
+        }
+        #block{
+            border: 0 solid #f0f0f0;
+            border-left-width: 1px;
+            border-right-width: 1px;
+        }
+        #cube{
+            display: block;
+            height: 30px;
+            width: 30px;
+            background: #bbb;
+        }
+        input[type="tel"]{
+            display: inline-block;
+            outline: none;
+            width: 7em;
+            box-shadow: none;
+            padding: 0 1em;
+            border: 1px solid #e0e0e0;
+            line-height: 2;
+        }
+        input + input{
+            margin-left: 6px;
+        }
+        label{
+            display: block;
+            line-height: 30px;
+        }
+        input[type="range"]{
+            display: block;
+            width: 99%;
+        }
+        #extraInput {
+            border: 0;
+        }
+    </style>
+</head>
+<body>
+<h1>test</h1>
+<canvas class="outerbox" id="demo"></canvas>
+<div class="outerbox" id="blockwrap"><div id="block"><span id="cube"></span></div></div>
+<div id="typesCont"></div>
+<div class="outerbox" id="extraInput"></div>
+<div class="outerbox">
+    <label><input type="checkbox" id="hold" />保留轨迹</label>
+    <label>duration<input type="range" id="dua" value="2000" min="600" max="10000" /></label>
+    <label>fps<input type="range" id="fps" value="60" min="2" max="60" /></label>
+    <label><input type="button" id="run" value="执行" /></label>
+</div>
+<script>
+    ;(function(t){
+        var types = t.types;
+
+        var build = {
+            options : function(){
+                var html = '';
+                for(var ty in types){
+                    if(types.hasOwnProperty(ty)){
+                        html += '<option value="'+ty+'" >'+ty+'</option>';
+                    }
+                }
+                html = [
+                    '<select id="slt">',
+                        html,
+                    '</select>',
+                ].join('');
+                typesCont.innerHTML = html;
+            },
+            extraInput : function(type){
+                var aniFunc = types[type];
+                var extraNum = /^function\s?\(([^\)]+)/.exec(aniFunc.toString())[1].split(',').length - 4;
+                if(extraNum != extraInput.children.length){
+                    extraInput.innerHTML = '';
+                    while(extraNum--){
+                        extraInput.innerHTML += '<input value="" type="tel" placeholder="extra param" />'
+                    }
+                }
+            }
+        }
+        var ani;
+
+        var ctx = demo.getContext('2d');
+
+        var colorCount = 0;
+
+        build.options();
+
+        run.onclick = extraInput.oninput = slt.onchange = function(){
+            var type = slt.value;
+            ani && ani.stop();
+
+            var width, height;
+            if(demo.width != demo.clientWidth){
+                demo.width = demo.clientWidth;
+            }
+            if(demo.height != demo.clientHeight){
+                demo.height = demo.clientHeight;
+            }
+
+            width = demo.width;
+            height = demo.height;
+
+            var padding = height * .2;
+
+
+            hold.checked || ctx.clearRect(0, 0, width, height);
+            ctx.fillStyle = 'hsla('+(colorCount+=42)+', 80%, 50%, .6)';
+
+            var contWidth = block.clientWidth - 30;
+
+            build.extraInput(type);
+            extra = (function(inputs){
+                return [].map.call(inputs, function(input){
+                    return input.value === '' ? undefined : input.value;
+                });
+            })(extraInput.children);
+
+            //################################################
+            t({
+                begin : 0,
+                end : contWidth,
+                type : type,
+                duration : dua.value || 2000,
+                extra : extra,
+                fps : fps.value || 60,
+                func : function(num, time, duration){
+                    cube.style.webkitTransform = 'translate('+num+'px, 0)';
+                    ctx.fillRect(width * time / duration, height - padding - num / contWidth * (height - padding - padding), 4, 4);
+                },
+                endfunc : function(){
+                    //something
+                }
+            })
+            //################################################
+        }
+    })(npTweenAni);
+</script>
+</body>
+</html>

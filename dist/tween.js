@@ -1,4 +1,5 @@
-var parse = function(){
+;(function(){
+    var parse = function(){
     var type = 0, args = arguments
     var hold = false, rsObj, curObj;
     if(args[args.length-1] === true){
@@ -270,4 +271,6 @@ tweenAniAnchor.types = tween = (function(){
     }
     return rs;
 })();
-module.exports = tweenAniAnchor;
+window.npTweenAni = tweenAniAnchor;
+
+})(window);
