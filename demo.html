@@ -128,7 +128,7 @@
 
         run.onclick = extraInput.oninput = slt.onchange = function(){
             var type = slt.value;
-            ani && ani.stop();
+            // ani && ani.stop();
 
             var width, height;
             if(demo.width != demo.clientWidth){
@@ -157,7 +157,7 @@
             })(extraInput.children);
 
             //################################################
-            t({
+            ani = t({
                 begin : 0,
                 end : contWidth,
                 type : type,
