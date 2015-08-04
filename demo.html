@@ -86,7 +86,8 @@
     <label><input type="checkbox" id="hold" />保留轨迹</label>
     <label>duration<input type="range" id="dua" value="2000" min="600" max="10000" /></label>
     <label>fps<input type="range" id="fps" value="60" min="2" max="60" /></label>
-    <label><input type="button" id="run" value="执行" /></label>
+    <input type="button" id="run" value="执行" />
+    <input type="button" id="runall" value="全部执行" />
 </div>
 <script>
     ;(function(t){
@@ -116,6 +117,9 @@
                         extraInput.innerHTML += '<input value="" type="tel" placeholder="extra param" />'
                     }
                 }
+            },
+            color : function(type){
+                return 'hsla('+('' + type.split('').map(function(char){return char.charCodeAt()}).reduce(function(s,i){return s+i}))+', 80%, 50%, .6)'
             }
         }
         var ani;
@@ -126,8 +130,7 @@
 
         build.options();
 
-        run.onclick = extraInput.oninput = slt.onchange = function(){
-            var type = slt.value;
+        var draw = function(type){
             // ani && ani.stop();
 
             var width, height;
@@ -145,7 +148,8 @@
 
 
             hold.checked || ctx.clearRect(0, 0, width, height);
-            ctx.fillStyle = 'hsla('+(colorCount+=42)+', 80%, 50%, .6)';
+
+            console.log('%c', 'border-left:20px solid '+build.color(type), type);
 
             var contWidth = block.clientWidth - 30;
 
@@ -164,7 +168,8 @@
                 duration : dua.value || 2000,
                 extra : extra,
                 fps : fps.value || 60,
-                func : function(num, time, duration){
+                func : function(num, time, duration, opts){
+                    ctx.fillStyle = build.color(type);
                     cube.style.webkitTransform = 'translate('+num+'px, 0)';
                     ctx.fillRect(width * time / duration, height - padding - num / contWidth * (height - padding - padding), 4, 4);
                 },
@@ -174,6 +179,18 @@
             })
             //################################################
         }
+        run.onclick = extraInput.oninput = slt.onchange = function(){
+            draw(slt.value);
+        }
+        runall.onclick = function(){
+            hold.checked = true;
+            for(var ty in types){
+                if(types.hasOwnProperty(ty)){
+                    draw(ty);
+                }
+            }
+        }
+
     })(npTweenAni);
 </script>
 </body>

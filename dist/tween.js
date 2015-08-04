@@ -50,7 +50,7 @@ var tweenAniAnchor = function(opts){
             opts.endfunc();
             return;
         }
-        opts.func(tweenTRS(Math.round(distance / spf)), distance, duration);
+        opts.func(tweenTRS(Math.round(distance / spf)), distance, duration, opts);
         requestAnimationFrame(arguments.callee);
     });
     return {

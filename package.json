@@ -1,6 +1,6 @@
 {
   "name": "np-tween-ani",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "tween.js封装。tween代码来源于以前找的一个tween函数库，然后demo也顺便做了一个差不多的方便使用。",
   "main": "tween.js",
   "scripts": {
