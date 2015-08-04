@@ -1,5 +1,5 @@
 ;(function(){
-    var parse = function(){
+var parse = function(){
     var type = 0, args = arguments
     var hold = false, rsObj, curObj;
     if(args[args.length-1] === true){
