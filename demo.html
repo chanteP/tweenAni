@@ -11,6 +11,7 @@
         html,body{
             margin:0;
             height: 100%;
+            overflow-x: hidden;
         }
         h1 {
             font-size: 16px;
@@ -18,7 +19,7 @@
             color: #ccc;
         }
         .outerbox{
-            width: 90%;
+            width: 80%;
             border: 1px solid #ccc;
             margin: 10px auto;
             display: block;
@@ -30,15 +31,15 @@
             margin-top: 0;
         }
         select{
-            width: 90%;
+            width: 80%;
             outline: none;
             display: block;
             margin: auto;
             height: 30px;
         }
         #blockwrap{
-            padding: 0 20%;
-            width: 50%;
+            padding: 0;
+            width: 80%;
         }
         #block{
             border: 0 solid #f0f0f0;
@@ -88,6 +89,7 @@
     <label>fps<input type="range" id="fps" value="60" min="2" max="60" /></label>
     <input type="button" id="run" value="执行" />
     <input type="button" id="runall" value="全部执行" />
+    <input type="button" id="clear" value="清除" />
 </div>
 <script>
     ;(function(t){
@@ -118,8 +120,9 @@
                     }
                 }
             },
-            color : function(type){
-                return 'hsla('+('' + type.split('').map(function(char){return char.charCodeAt()}).reduce(function(s,i){return s+i}))+', 80%, 50%, .6)'
+            color : function(){
+                var args = [].map.call(arguments, function(arg){return arg.toString();}).join('');
+                return 'hsla('+('' + args.split('').map(function(char){return char.charCodeAt()}).reduce(function(s,i){return s+i}))+', 80%, 50%, .6)'
             }
         }
         var ani;
@@ -149,29 +152,52 @@
 
             hold.checked || ctx.clearRect(0, 0, width, height);
 
-            console.log('%c', 'border-left:20px solid '+build.color(type), type);
 
             var contWidth = block.clientWidth - 30;
 
             build.extraInput(type);
-            extra = (function(inputs){
+            var extra = (function(inputs){
                 return [].map.call(inputs, function(input){
                     return input.value === '' ? undefined : input.value;
                 });
             })(extraInput.children);
+
+            var durV = +dua.value || 2000,
+                fpsV = +fps.value || 60;
+
+            console.log('%c', 'border-left:20px solid '+build.color(type, extra, durV, fpsV), type);
 
             //################################################
             ani = t({
                 begin : 0,
                 end : contWidth,
                 type : type,
-                duration : dua.value || 2000,
+                duration : durV,
                 extra : extra,
-                fps : fps.value || 60,
+                fps : fpsV,
                 func : function(num, time, duration, opts){
-                    ctx.fillStyle = build.color(type);
                     cube.style.webkitTransform = 'translate('+num+'px, 0)';
-                    ctx.fillRect(width * time / duration, height - padding - num / contWidth * (height - padding - padding), 4, 4);
+                    // ctx.fillStyle = build.color(type, extra, durV, fpsV);
+                    var x = width * time / duration,
+                        y = height - padding - num / contWidth * (height - padding - padding);
+
+                    if(!this.point){
+                        this.point = {x : 0, y : height - padding};
+                    }
+                    ctx.save();
+                    ctx.strokeStyle = build.color(type, extra, durV, fpsV);
+                    ctx.beginPath();
+                    ctx.moveTo(this.point.x, this.point.y);
+                    ctx.lineTo(x, y);
+                    ctx.stroke();
+                    ctx.closePath();
+                    ctx.restore();
+
+                    this.point = {x : x, y : y};
+                    
+                    // console.log(this.step, num, time, duration, x, y)
+
+                    // ctx.fillRect(x, y, 4, 4);
                 },
                 endfunc : function(){
                     //something
@@ -189,6 +215,9 @@
                     draw(ty);
                 }
             }
+        }
+        clear.onclick = function(){
+            demo.width = demo.width;
         }
 
     })(npTweenAni);

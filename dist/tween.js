@@ -24,7 +24,7 @@ window.requestAnimationFrame = null
     || window.msRequestAnimationFrame
     || window.oRequestAnimationFrame
     || function(callback) {setTimeout(callback, 1000 / 60);};
-    //raf优化算法
+    //raf优化
 var tweenAniAnchor = function(opts){
     opts = parse({
         'type' : 'cubic-easein',
@@ -38,26 +38,30 @@ var tweenAniAnchor = function(opts){
     },opts);
     var spf = 1000 / opts.fps;
     var duration = opts.duration;
-    var step = duration / Math.round(spf);
+    var step = Math.round(duration / spf);
     var tweenTRS = tweenT(opts.type, opts.begin, opts.end, step, opts.extra);
     var startTimer = Date.now(), distance;
     var controll;
+    var ani = {
+        'stop' : function(){
+            controll = true;
+        },
+        'opts' : opts
+    };
     requestAnimationFrame(function(){
         if(controll){return;}
         distance = Date.now() - startTimer;
         if(distance >= duration){
-            opts.func(opts.end);
+            ani.step = Math.round(duration / spf);
+            opts.func.call(ani, opts.end, duration, duration, opts);
             opts.endfunc();
             return;
         }
-        opts.func(tweenTRS(Math.round(distance / spf)), distance, duration, opts);
+        ani.step = Math.round(distance / spf);
+        opts.func.call(ani, tweenTRS(ani.step), distance, duration, opts);
         requestAnimationFrame(arguments.callee);
     });
-    return {
-        'stop' : function(){
-            controll = true;
-        }
-    };
+    return ani;
 };
 //指定t输出数值
 var tweenT = function(type, begin, end, duration, extra){
