@@ -52,7 +52,7 @@
             width: 30px;
             background: #bbb;
         }
-        input[type="tel"]{
+        input[type="number"]{
             display: inline-block;
             outline: none;
             width: 7em;
@@ -116,7 +116,7 @@
                 if(extraNum != extraInput.children.length){
                     extraInput.innerHTML = '';
                     while(extraNum--){
-                        extraInput.innerHTML += '<input value="" type="tel" placeholder="extra param" />'
+                        extraInput.innerHTML += '<input value="" type="number" placeholder="extra param" />'
                     }
                 }
             },
