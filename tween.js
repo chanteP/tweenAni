@@ -75,6 +75,9 @@ var tweenT = function(type, begin, end, duration, extra){
 };
 
 var tween;
+tweenAniAnchor.register = function(typeName, func){
+    tweenAniAnchor.types[typeName] = func;
+}
 tweenAniAnchor.types = tween = (function(){
     var rs = {};
     var type = {
