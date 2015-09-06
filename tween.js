@@ -47,7 +47,7 @@ var tweenAniAnchor = function(opts){
         },
         'opts' : opts
     };
-    requestAnimationFrame(function(){
+    var frame = function(){
         if(controll){return;}
         distance = Date.now() - startTimer;
         if(distance >= duration){
@@ -58,14 +58,15 @@ var tweenAniAnchor = function(opts){
         }
         ani.step = Math.round(distance / spf);
         opts.func.call(ani, tweenTRS(ani.step), distance, duration, opts);
-        requestAnimationFrame(arguments.callee);
-    });
+        requestAnimationFrame(frame);
+    }
+    requestAnimationFrame(frame);
     return ani;
 };
 //指定t输出数值
 var tweenT = function(type, begin, end, duration, extra){
-    b = Math.min(begin, end);
-    c = Math.max(begin, end);
+    var b = Math.min(begin, end);
+    var c = Math.max(begin, end);
     return function(t){
         if(t > duration){return end;}
         return begin > end ? 
@@ -75,10 +76,6 @@ var tweenT = function(type, begin, end, duration, extra){
 };
 
 var tween;
-tweenAniAnchor.register = function(typeName, func){
-    //func (time, begin, end, duration, extra...)
-    tweenAniAnchor.types[typeName] = func;
-}
 tweenAniAnchor.types = tween = (function(){
     var rs = {};
     var type = {
